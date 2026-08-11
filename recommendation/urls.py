@@ -7,7 +7,7 @@ from .views import RecommendationAPIView
 
 urlpatterns = [
     path("api/v1/recommendation", RecommendationAPIView.as_view(),
-          name="Recommendation"),
+          name="Recommendation"),      
 ]
 
 
