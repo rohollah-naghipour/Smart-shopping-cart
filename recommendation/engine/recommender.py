@@ -1,28 +1,24 @@
 from decimal import Decimal
 
+from .repository import get_available_products
 from .scorer import calculate_score
 from .optimizer import optimize_products
 
 
-def generate_recommendation(products, budget):
+def generate_recommendation(budget):
     """
-    Generate a shopping recommendation.
-
-    Steps:
-    1. Calculate score for every product.
-    2. Send scored products to optimizer.
-    3. Return the optimized shopping plan.
+    Generate a recommendation using real database products.
     """
 
     budget = Decimal(str(budget))
+
+    products = get_available_products()
 
     scored_products = []
 
     for product in products:
         product_copy = product.copy()
-
         product_copy["score"] = calculate_score(product_copy)
-
         scored_products.append(product_copy)
 
     result = optimize_products(
