@@ -1,35 +1,40 @@
 from decimal import Decimal
 
 
-def calculate_product_score(
-    price: Decimal,
-    calories: Decimal,
-    protein: Decimal,
-    fiber: Decimal,
-) -> Decimal:
-    """
-    Calculate a simple MVP score for a food product.
+PROTEIN_WEIGHT = Decimal("2.0")
+FIBER_WEIGHT = Decimal("1.5")
+CALORIE_PENALTY = Decimal("0.002")
 
-    Higher protein and fiber increase the score.
-    Higher price and calories reduce the score.
+
+def calculate_score(product):
     """
+    Calculate the nutritional score of a product.
+
+    Expected product structure:
+
+    {
+        "price": 900000,
+        "calories": 340,
+        "protein": 25,
+        "fiber": 11,
+    }
+    """
+
+    price = Decimal(str(product["price"]))
+    protein = Decimal(str(product.get("protein", 0)))
+    fiber = Decimal(str(product.get("fiber", 0)))
+    calories = Decimal(str(product.get("calories", 0)))
 
     if price <= 0:
         return Decimal("0")
 
-    protein_score = protein * Decimal("4")
-    fiber_score = fiber * Decimal("3")
-    calorie_penalty = calories / Decimal("100")
-    price_penalty = price / Decimal("100000")
-
-    score = (
-        protein_score
-        + fiber_score
-        - calorie_penalty
-        - price_penalty
+    nutritional_value = (
+        protein * PROTEIN_WEIGHT
+        + fiber * FIBER_WEIGHT
+        - calories * CALORIE_PENALTY
     )
 
-    return max(
-        Decimal("0"),
-        score.quantize(Decimal("0.01")),
-    )
+    if nutritional_value < 0:
+        nutritional_value = Decimal("0")
+
+    return nutritional_value / price

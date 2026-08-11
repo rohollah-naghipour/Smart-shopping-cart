@@ -1,27 +1,48 @@
 from decimal import Decimal
 
 
-def optimize_products(
-    products: list[dict],
-    budget: Decimal,
-) -> list[dict]:
-    
-    sorted_products = sorted(
+def optimize_products(products, budget):
+    """
+    Select products while respecting the available budget.
+
+    products:
+        List of products that already contain a calculated score.
+
+    budget:
+        Maximum amount available for shopping.
+    """
+
+    budget = Decimal(str(budget))
+    remaining_budget = budget
+    selected_products = []
+
+    # بهترین محصولات ابتدا بررسی می‌شوند
+    products = sorted(
         products,
         key=lambda product: product["score"],
         reverse=True,
     )
 
-    selected = []
-    total_cost = Decimal("0")
-
-    for product in sorted_products:
+    for product in products:
         price = Decimal(str(product["price"]))
 
-        if total_cost + price > budget:
+        if price <= 0:
             continue
 
-        selected.append(product)
-        total_cost += price
+        if price <= remaining_budget:
+            selected_products.append(
+                {
+                    "product_id": product["id"],
+                    "name": product["name"],
+                    "price": price,
+                    "quantity": 1,
+                }
+            )
 
-    return selected
+            remaining_budget -= price
+
+    return {
+        "items": selected_products,
+        "total_cost": budget - remaining_budget,
+        "remaining_budget": remaining_budget,
+    }

@@ -1,32 +1,38 @@
 from decimal import Decimal
 
+from .scorer import calculate_score
 from .optimizer import optimize_products
-from .scorer import calculate_product_score
 
 
-def generate_recommendation(
-    products: list[dict],
-    budget: Decimal,
-) -> list[dict]:
+def generate_recommendation(products, budget):
+    """
+    Generate a shopping recommendation.
+
+    Steps:
+    1. Calculate score for every product.
+    2. Send scored products to optimizer.
+    3. Return the optimized shopping plan.
+    """
+
+    budget = Decimal(str(budget))
 
     scored_products = []
 
     for product in products:
-        score = calculate_product_score(
-            price=Decimal(str(product["price"])),
-            calories=Decimal(str(product["calories"])),
-            protein=Decimal(str(product["protein"])),
-            fiber=Decimal(str(product["fiber"])),
-        )
+        product_copy = product.copy()
 
-        scored_products.append(
-            {
-                **product,
-                "score": score,
-            }
-        )
+        product_copy["score"] = calculate_score(product_copy)
 
-    return optimize_products(
+        scored_products.append(product_copy)
+
+    result = optimize_products(
         products=scored_products,
         budget=budget,
     )
+
+    return {
+        "budget": budget,
+        "total_cost": result["total_cost"],
+        "remaining_budget": result["remaining_budget"],
+        "items": result["items"],
+    }
