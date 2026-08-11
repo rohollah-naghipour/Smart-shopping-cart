@@ -29,6 +29,7 @@ local_settings.py
 # SQLite database
 db.sqlite3
 db.sqlite3-journal
+sql_db
 
 # Django static/media
 staticfiles/
