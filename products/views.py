@@ -8,11 +8,6 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all().order_by("name")
     serializer_class = ProductListSerializer
@@ -23,10 +18,7 @@ class ProductAPIView(APIView):
         try: 
             product = Product.objects.get(pk=pk)
 
-            print(product)
-
             serializer = ProductSerializer(product)
-            #print(serializer)
 
             return Response(serializer.data,  status=status.HTTP_200_OK)
         except Product.DoesNotExist:
